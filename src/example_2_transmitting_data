@@ -1,0 +1,129 @@
+/************************************************************************************ 
+* Driver use example 2: Transmiting data(Using 3 level FIFO buffering, for achieve high trasfer speed) 
+* 
+* ps: At first, set nRF24L01 SPI and control PINS 
+*     Then, include driver file. 
+*     Now, that´s all right 
+* 
+*     put RF24_TX_putbuffer(true,32, "...        for enabling burst and reach 2Mbps 
+* 
+*/ 
+void RF24_driver_use_example_TXdata() {    //Example of using this driver 
+   //int TXbuffer[40], TXdatasize;     //not necessary 
+   //int stat=0,fstat=0,retrys,lost,ret; 
+   int stat=0,retrys,lost,ret; 
+    
+   RF24_initPorts(); 
+   RF24_default_config(); 
+    
+   RF24_TX_SET();       //Transmitter on    
+
+   //USE the 3 nRF24 FIFO buffer stacks 
+   //This procedure increases performance 
+   ret=RF24_TX_putbuffer(false,32, "La cucaracha!!, Fill FIFO Stack1"); //Transmit 32bytes data(text string) to actual address(default_config address) 
+   //now, you can write FIFO stack2 while nRF is transmiting 
+   ret=RF24_TX_putbuffer(false,32, "La cucaracha!!, Fill FIFO Stack2"); //Transmit 32bytes data(text string) to actual address(default_config address) 
+   while(true) {        //Enter transmit mode infinitely 
+      /*//now, you can write FIFO stack3, filling the last nRF24 FIFO space 
+      ret=RF24_TX_putbuffer(true, 32, "La cucaracha!!, Fill FIFO Stack3"); //Transmit 32bytes data(text string) to actual address(default_config address) 
+
+      if (ret!=1) {     //if error occurred(if you passed wrong parameters or something else...) 
+         //RF24_TX_reusebuffer();            //Retransmit last TX data present in TX buffer    
+         RF24_comm(REUSE_TX_PL);             //Reuse last transmitted payload. TX payload reuse is active until W_TX_PAYLOAD or FLUSH TX is executed. TX payload reuse must not be activated or deactivated during package transmission. 
+         //RF24_FLUSH_TX(); 
+         RF24_STATUS_clr_IRQs(IRQ_ALL);      //Allows clearing all IRQs at the same time 
+         lost=RF24_lost_packets();           //How how many packets was lost during Transmition 
+         retrys=RF24_retry_packets();        //How how many retrys for transmit data(TX) 
+         continue;      //return begining of while 
+      }*/ 
+      // 
+      // 
+      //now, you can write FIFO stack3, filling the last nRF24 FIFO space 
+      ret=RF24_TX_putbuffer(false,32, "La cucaracha!!, Fill FIFO Stack3"); //Transmit 32bytes data(text string) to actual address(default_config address) 
+      //Do this to read each of 3 filled FIFO buffer stacks      
+      while(true) { 
+         while(RF24_IRQ_state()==false);        //Waits for any interrupt.  Same as "while(!RF24_IRQ_state());"      
+         stat=RF24_get_status(); 
+         if (RF24_STATUS_TX_datasent_IRQ(stat)) break;   //Fifo 1 transfered 
+         else {                                 //if (RF24_STATUS_MAX_retrys_reached_IRQ(stat)) { 
+            RF24_STATUS_clr_IRQs(IRQ_ALL);      //Allows clearing all IRQs at the same time 
+            //RF24_comm(REUSE_TX_PL);             //Reuse last transmitted payload. TX payload reuse is active until W_TX_PAYLOAD or FLUSH TX is executed. TX payload reuse must not be activated or deactivated during package transmission. 
+         } 
+      } 
+      //You can check statistic regiters if you want to 
+      //lost=RF24_lost_packets();           //How how many packets was lost during Transmition 
+      //retrys=RF24_retry_packets();        //How how many retrys for transmit data(TX) 
+      RF24_STATUS_clr_IRQs(IRQ_ALL);      //Allows clearing all IRQs at the same time 
+      // 
+      // 
+      // 
+      // 
+      //now, you can write FIFO stack3, filling the last nRF24 FIFO space 
+      ret=RF24_TX_putbuffer(false,32, "La cucaracha!!, Fill FIFO Stack1"); //Transmit 32bytes data(text string) to actual address(default_config address) 
+      //Do this to read each of 3 filled FIFO buffer stacks      
+      while(true) { 
+         while(RF24_IRQ_state()==false);        //Waits for any interrupt.  Same as "while(!RF24_IRQ_state());"      
+         stat=RF24_get_status(); 
+         if (RF24_STATUS_TX_datasent_IRQ(stat)) break;   //Fifo 2 transfered 
+         else {                                 //if (RF24_STATUS_MAX_retrys_reached_IRQ(stat)) { 
+            RF24_STATUS_clr_IRQs(IRQ_ALL);      //Allows clearing all IRQs at the same time 
+            //RF24_comm(REUSE_TX_PL);             //Reuse last transmitted payload. TX payload reuse is active until W_TX_PAYLOAD or FLUSH TX is executed. TX payload reuse must not be activated or deactivated during package transmission. 
+         } 
+      } 
+      //You can check statistic regiters if you want to 
+      //lost=RF24_lost_packets();           //How how many packets was lost during Transmition 
+      //retrys=RF24_retry_packets();        //How how many retrys for transmit data(TX) 
+      RF24_STATUS_clr_IRQs(IRQ_ALL);      //Allows clearing all IRQs at the same time 
+      // 
+      // 
+      // 
+      // 
+      //now, you can write FIFO stack3, filling the last nRF24 FIFO space 
+      ret=RF24_TX_putbuffer(false,32, "La cucaracha!!, Fill FIFO Stack2"); //Transmit 32bytes data(text string) to actual address(default_config address) 
+      //Do this to read each of 3 filled FIFO buffer stacks      
+      while(true) { 
+         while(RF24_IRQ_state()==false);        //Waits for any interrupt.  Same as "while(!RF24_IRQ_state());"      
+         stat=RF24_get_status(); 
+         if (RF24_STATUS_TX_datasent_IRQ(stat)) break;   //Fifo 3 transfered 
+         else {                                 //if (RF24_STATUS_MAX_retrys_reached_IRQ(stat)) { 
+            RF24_STATUS_clr_IRQs(IRQ_ALL);      //Allows clearing all IRQs at the same time 
+            //RF24_comm(REUSE_TX_PL);             //Reuse last transmitted payload. TX payload reuse is active until W_TX_PAYLOAD or FLUSH TX is executed. TX payload reuse must not be activated or deactivated during package transmission. 
+         } 
+      } 
+      //You can check statistic regiters if you want to 
+      lost=RF24_lost_packets();           //How how many packets was lost during Transmition 
+      retrys=RF24_retry_packets();        //How how many retrys for transmit data(TX) 
+      RF24_STATUS_clr_IRQs(IRQ_ALL);      //Allows clearing all IRQs at the same time 
+      // 
+      // 
+      //You must check and clear IRQ to assert that two last packets was sent(They remain in FIFO stack) 
+      /*while(RF24_IRQ_state()==false);     //Waits for any interrupt.  Same as "while(!RF24_IRQ_state());"      
+      RF24_STATUS_clr_IRQs(IRQ_ALL);      //Allows clearing all IRQs at the same time 
+      while(RF24_IRQ_state()==false);     //Waits for any interrupt.  Same as "while(!RF24_IRQ_state());"      
+      RF24_STATUS_clr_IRQs(IRQ_ALL);      //Allows clearing all IRQs at the same time*/ 
+
+      /*while(true) {    
+         RF24_TX_reusebuffer();            //Retransmit last TX data present in TX buffer    
+         while(RF24_IRQ_state()==false);     //Waits for any interrupt.  Same as "while(!RF24_IRQ_state());"      
+         RF24_STATUS_clr_IRQs(IRQ_ALL);      //Allows clearing all IRQs at the same time 
+      }*/ 
+      /*stat=RF24_get_status(); 
+      if (RF24_STATUS_TX_datasent_IRQ(stat))   //return true if buffer_empty 
+         delay_ms(1);                     //ACK Received OK 
+      if (RF24_STATUS_MAX_retrys_reached_IRQ(stat))   //return true if trnasmit error 
+         delay_ms(1);                     //ACK not Received 
+      
+      lost=RF24_lost_packets();         //How how many packets was lost during Transmition 
+      retrys=RF24_retry_packets();      //How how many retrys for transmit data(TX) 
+      */ 
+      
+      //RF24_STATUS_clr_IRQs(IRQ_ALL);    //Allows clearing all IRQs at the same time 
+      //RF24_TX_reusebuffer();            //Retransmit last TX data present in TX buffer 
+      //RF24_REUSE_TX_PL();               //(do not check for errors like TX_EMPTY)Reuse last transmitted payload. TX payload reuse is active until W_TX_PAYLOAD or FLUSH TX is executed. TX payload reuse must not be activated or deactivated during package transmission.    
+      //RF24_FLUSH_TX(); 
+      //RF24_STATUS_clr_IRQs(IRQ_ALL);      //Allows clearing all IRQs at the same time 
+      
+      //output_toggle(INDICACAO_LED);       //Show something is happening 
+   } 
+
+}

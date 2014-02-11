@@ -1,0 +1,26 @@
+/************************************************************************************ 
+* Driver use example 3: Transmiting data(simple withou 3 level fifo) 
+* 
+* ps: At first, set nRF24L01 SPI and control PINS 
+*     Then, include driver file. 
+*     Now, that´s all right 
+* 
+*     put RF24_TX_putbuffer(true,32, "...        for enabling burst and reach 2Mbps 
+* 
+*/ 
+void RF24_driver_use_example_TXdata_simple() {    //Example of using this driver 
+    
+   RF24_initPorts(); 
+   RF24_default_config(); 
+    
+   RF24_TX_SET();       //Transmitter on    
+
+   while(true) {        //Enter transmit mode infinitely 
+      //now, you can write FIFO stack1 
+      RF24_TX_putbuffer(false,32, "La cucaracha!!, Fill FIFO Stack1"); //Transmit 32bytes data(text string) to actual address(default_config address) 
+
+      //Do this to check each data transfer 
+      while(RF24_IRQ_state()==false);        //Waits for any interrupt.  Same as "while(!RF24_IRQ_state());"      
+      RF24_STATUS_clr_IRQs(IRQ_ALL);      //Allows clearing all IRQs at the same time 
+   } 
+}
